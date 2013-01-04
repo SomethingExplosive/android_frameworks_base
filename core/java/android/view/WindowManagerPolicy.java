@@ -399,6 +399,11 @@ public interface WindowManagerPolicy {
 
         public void shutdown(boolean confirm);
         public void rebootSafeMode(boolean confirm);
+		
+		/**
+		 * For reboot of device from power menu
+		 */
+		public void reboot();
     }
 
     /**
