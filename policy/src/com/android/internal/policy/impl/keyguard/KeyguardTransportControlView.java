@@ -334,11 +334,8 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
     }
 
     public boolean isMusicPlaying() {
-        if (!mMusicClientPresent) {
-            return false;
-        }
-        return mCurrentPlayState == RemoteControlClient.PLAYSTATE_PLAYING
-                || mCurrentPlayState == RemoteControlClient.PLAYSTATE_BUFFERING;
+       return mCurrentPlayState == RemoteControlClient.PLAYSTATE_PLAYING
+               || mCurrentPlayState == RemoteControlClient.PLAYSTATE_BUFFERING;
     }
 
     private static void setVisibilityBasedOnFlag(View view, int flags, int flag) {
