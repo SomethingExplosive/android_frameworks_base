@@ -65,8 +65,6 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
 
-import com.android.internal.app.ActivityTrigger;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
