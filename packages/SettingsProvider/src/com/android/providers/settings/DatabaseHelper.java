@@ -47,6 +47,7 @@ import com.android.internal.content.PackageHelper;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.RILConstants;
+import com.android.internal.telephony.cdma.CdmaSubscriptionSourceManager;
 import com.android.internal.util.XmlUtils;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockPatternView;
@@ -1429,7 +1430,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     };
                     String[] secureToGlobal = {
                             Settings.Global.PREFERRED_NETWORK_MODE,
-                            Settings.Global.PREFERRED_CDMA_SUBSCRIPTION,
+                            Settings.Global.CDMA_SUBSCRIPTION_MODE,
                     };
 
                     moveSettingsToNewTable(db, TABLE_SYSTEM, TABLE_GLOBAL, systemToGlobal, true);
@@ -1541,15 +1542,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         if (upgradeVersion == 97) {
-            // Add Default Dialer AutoComplete setting
             if (mUserHandle == UserHandle.USER_OWNER) {
                 db.beginTransaction();
                 SQLiteStatement stmt = null;
                 try {
-                    stmt = db.compileStatement("INSERT OR IGNORE INTO secure(name,value)"
+                    stmt = db.compileStatement("INSERT OR REPLACE INTO global(name,value)"
                             + " VALUES(?,?);");
-                    loadIntegerSetting(stmt, Settings.Secure.DIALPAD_AUTOCOMPLETE,
-                            R.integer.def_dialpad_autocomplete);
+                    loadIntegerSetting(stmt, Settings.Global.LOW_BATTERY_SOUND_TIMEOUT,
+                            R.integer.def_low_battery_sound_timeout);
                     db.setTransactionSuccessful();
                 } finally {
                     db.endTransaction();
@@ -2114,9 +2114,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadBooleanSetting(stmt, Settings.Secure.USER_SETUP_COMPLETE,
                     R.bool.def_user_setup_complete);
-
-            loadIntegerSetting(stmt, Settings.Secure.DIALPAD_AUTOCOMPLETE,
-                    R.integer.def_dialpad_autocomplete);
         } finally {
             if (stmt != null) stmt.close();
         }
@@ -2261,15 +2258,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Set default cdma call auto retry
             loadSetting(stmt, Settings.Global.CALL_AUTO_RETRY, 0);
 
-            // Set the preferred network mode to 0 = Global, CDMA default
+            // Set the preferred network mode to target desired value or Default
+            // value defined in RILConstants
             int type;
-            if (TelephonyManager.getLteOnCdmaModeStatic() == PhoneConstants.LTE_ON_CDMA_TRUE) {
-                type = Phone.NT_MODE_GLOBAL;
-            } else {
-                type = SystemProperties.getInt("ro.telephony.default_network",
+            type = SystemProperties.getInt("ro.telephony.default_network",
                         RILConstants.PREFERRED_NETWORK_MODE);
-            }
             loadSetting(stmt, Settings.Global.PREFERRED_NETWORK_MODE, type);
+
+            // Set the preferred cdma subscription source to target desired value or default
+            // value defined in CdmaSubscriptionSourceManager
+            type = SystemProperties.getInt("ro.telephony.default_cdma_sub",
+                        CdmaSubscriptionSourceManager.PREFERRED_CDMA_SUBSCRIPTION);
+            loadSetting(stmt, Settings.Global.CDMA_SUBSCRIPTION_MODE, type);
+
+            loadIntegerSetting(stmt, Settings.Global.LOW_BATTERY_SOUND_TIMEOUT,
+                    R.integer.def_low_battery_sound_timeout);
 
             // --- New global settings start here
         } finally {
