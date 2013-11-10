@@ -1136,6 +1136,7 @@ public class AppOpsManager {
         finishOp(op, Process.myUid(), mContext.getOpPackageName());
     }
 
+    /** @hide */
     public boolean getPrivacyGuardSettingForPackage(int uid, String packageName) {
         try {
             return mService.getPrivacyGuardSettingForPackage(uid, packageName);
@@ -1144,6 +1145,7 @@ public class AppOpsManager {
         return false;
     }
 
+    /** @hide */
     public void setPrivacyGuardSettingForPackage(int uid, String packageName,
             boolean state) {
         try {
