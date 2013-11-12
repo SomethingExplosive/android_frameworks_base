@@ -4480,45 +4480,6 @@ public class ConnectivityService extends IConnectivityManager.Stub {
         }
     }
 
-    // TODO: Move to ConnectivityManager and make public?
-    private static final String CONNECTED_TO_PROVISIONING_NETWORK_ACTION =
-            "com.android.server.connectivityservice.CONNECTED_TO_PROVISIONING_NETWORK_ACTION";
-
-    private BroadcastReceiver mProvisioningReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(CONNECTED_TO_PROVISIONING_NETWORK_ACTION)) {
-                handleMobileProvisioningAction(intent.getStringExtra("EXTRA_URL"));
-            }
-        }
-    };
-
-    private void handleMobileProvisioningAction(String url) {
-        // Notication mark notification as not visible
-        setProvNotificationVisible(false, ConnectivityManager.TYPE_NONE, null, null);
-
-        // If provisioning network handle as a special case,
-        // otherwise launch browser with the intent directly.
-        NetworkInfo ni = getProvisioningNetworkInfo();
-        if ((ni != null) && ni.isConnectedToProvisioningNetwork()) {
-            if (DBG) log("handleMobileProvisioningAction: on provisioning network");
-            MobileDataStateTracker mdst = (MobileDataStateTracker)
-                    mNetTrackers[ConnectivityManager.TYPE_MOBILE];
-            mdst.enableMobileProvisioning(url);
-        } else {
-            if (DBG) log("handleMobileProvisioningAction: on default network");
-            Intent newIntent =
-                    new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT |
-                    Intent.FLAG_ACTIVITY_NEW_TASK);
-            try {
-                mContext.startActivity(newIntent);
-            } catch (ActivityNotFoundException e) {
-                loge("handleMobileProvisioningAction: startActivity failed" + e);
-            }
-        }
-    }
-
     private static final String NOTIFICATION_ID = "CaptivePortal.Notification";
     private volatile boolean mIsNotificationVisible = false;
 
