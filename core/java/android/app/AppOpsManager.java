@@ -195,7 +195,9 @@ public class AppOpsManager {
     /** @hide */
     public static final int OP_ALARM_WAKEUP = 46;
     /** @hide */
-    public static final int _NUM_OP = 47;
+    public static final int OP_BOOT_COMPLETED = 47;
+    /** @hide */
+    public static final int _NUM_OP = 48;
 
     /** Access to coarse location information. */
     public static final String OPSTR_COARSE_LOCATION =
@@ -266,6 +268,7 @@ public class AppOpsManager {
             OP_BLUETOOTH_CHANGE,
             OP_DATA_CONNECT_CHANGE,
             OP_ALARM_WAKEUP,
+            OP_BOOT_COMPLETED,
     };
 
     /**
@@ -316,6 +319,7 @@ public class AppOpsManager {
             null,
             OPSTR_MONITOR_LOCATION,
             OPSTR_MONITOR_HIGH_POWER_LOCATION,
+            null,
             null,
             null,
             null,
@@ -374,6 +378,7 @@ public class AppOpsManager {
             "BLUETOOTH_CHANGE",
             "DATA_CONNECT_CHANGE",
             "ALARM_WAKEUP",
+            "BOOT_COMPLETED",
     };
 
     /**
@@ -428,6 +433,7 @@ public class AppOpsManager {
             android.Manifest.permission.BLUETOOTH,
             android.Manifest.permission.CHANGE_NETWORK_STATE,
             null, // OP_ALARM_WAKEUP
+            android.Manifest.permission.RECEIVE_BOOT_COMPLETED,
     };
 
     /**
@@ -481,6 +487,7 @@ public class AppOpsManager {
             AppOpsManager.MODE_ALLOWED,
             AppOpsManager.MODE_ALLOWED,
             AppOpsManager.MODE_ALLOWED,
+            AppOpsManager.MODE_ALLOWED, // OP_BOOT_COMPLETED
     };
 
     /**
@@ -507,6 +514,7 @@ public class AppOpsManager {
             false,
             false,
             true,      // OP_WRITE_SMS
+            false,
             false,
             false,
             false,
