@@ -384,7 +384,7 @@ class QuickSettings {
         wifiTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-				final boolean enable =
+                    final boolean enable =
                             (mWifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED);
                     new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -574,7 +574,7 @@ class QuickSettings {
                 bluetoothTile.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-						startSettingsActivity(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                        startSettingsActivity(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
                         return true;
                     }});
             }
