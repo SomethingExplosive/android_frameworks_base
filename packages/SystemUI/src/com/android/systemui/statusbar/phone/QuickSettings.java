@@ -39,6 +39,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.media.MediaRouter;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -105,8 +106,11 @@ class QuickSettings {
     private AsyncTask<Void, Void, Pair<String, Drawable>> mUserInfoTask;
     private AsyncTask<Void, Void, Pair<Boolean, Boolean>> mQueryCertTask;
 
+    private ConnectivityManager mCm;
+
     boolean mTilesSetUp = false;
     boolean mUseDefaultAvatar = false;
+    boolean mDataDisabled = false;
 
     private Handler mHandler;
 
@@ -124,6 +128,7 @@ class QuickSettings {
         mBluetoothState = new QuickSettingsModel.BluetoothState();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        mCm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         mHandler = new Handler();
 
@@ -436,11 +441,23 @@ class QuickSettings {
             rssiTile.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mDataDisabled = !mDataDisabled;
+                    if (!mCm.getMobileDataEnabled()) {
+                        mCm.setMobileDataEnabled(true);
+                    } else {
+                        mCm.setMobileDataEnabled(false);
+                    }
+                }
+            });
+            rssiTile.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick (View v) {
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName(
                             "com.android.settings",
                             "com.android.settings.Settings$DataUsageSummaryActivity"));
                     startSettingsActivity(intent);
+                    return true;
                 }
             });
             mModel.addRSSITile(rssiTile, new NetworkActivityCallback() {
@@ -454,8 +471,10 @@ class QuickSettings {
                     iv.setImageDrawable(null);
                     iv.setImageResource(rssiState.signalIconId);
 
-                    if (rssiState.dataTypeIconId > 0) {
+                    if (rssiState.dataTypeIconId > 0 && mDataDisabled == false) {
                         iov.setImageResource(rssiState.dataTypeIconId);
+                    } else if (mDataDisabled == true) {
+                        iov.setImageResource(R.drawable.ic_qs_signal_data_off);
                     } else {
                         iov.setImageDrawable(null);
                     }
